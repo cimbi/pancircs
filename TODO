@@ -1,0 +1,16 @@
+### - To be publishable
+#TODO - create comments and describe functions
+#TODO - _ for internal functions and objects
+#TODO - split the functions into separate files and folders - DONE
+#TODO - generate documentation using sfinx
+#TODO - make sure the code is PEP8
+
+### - for next versions
+
+#TODO - try to speed up plotting
+#TODO - take care of tick lable creation - should be ticks - not changing with zoom
+
+### Bigger things
+
+#TODO - uncessary - make the plot interactive
+#TODO - switch to vispy

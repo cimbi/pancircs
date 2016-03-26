@@ -1,0 +1,7 @@
+*.c
+*.so
+*.pyc
+*.DS_Store
+.spyderproject
+*~
+__pycache__
