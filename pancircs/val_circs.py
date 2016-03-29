@@ -29,7 +29,7 @@ import matplotlib.pyplot as plt
 
 
 def hist_circ(nodes, heat, data, r, max_height, orderby=None, groupby=None,
-              ax=None, method='sum', cmap='jet', create_labels=True,
+              ax=None, method='sum', cmap='jet', labels=True,
               headlayer=None, codein=['height']):
 
     """
@@ -116,13 +116,13 @@ def hist_circ(nodes, heat, data, r, max_height, orderby=None, groupby=None,
 
         # TODO KWARGS to bar, later
 
-    if create_labels:
-        circ_labels(node_list, node_width, ax)
+    if labels:
+        create_labels(node_list, node_width, ax)
         if any([x.group for x in node_list]):
-            circ_group_labels(node_list, node_width, ax)
+            create_group_labels(node_list, node_width, ax)
 
     # In the end create layer instance
-    layer = circ_layer('hist_circo', r, max_height, node_list, node_width)
+    layer = CircLayer('hist_circo', r, max_height, node_list, node_width)
 
     return ax, layer
 
@@ -131,7 +131,7 @@ def hist_circ(nodes, heat, data, r, max_height, orderby=None, groupby=None,
 
 
 def heat_map_circ(nodes, sublayers, heat, data, r, row_height, orderby=None,
-                  groupby=None, ax=None, cmap='jet', create_labels=True,
+                  groupby=None, ax=None, cmap='jet', labels=True,
                   headlayer=None, codein=['color']):
 
     # TODO - add separation and sorting later by structure for example
@@ -227,15 +227,15 @@ def heat_map_circ(nodes, sublayers, heat, data, r, row_height, orderby=None,
         # TODO KWARGS to bar, later
 
     # TODO kwargs for text and check if text is already there
-    if create_labels:
-        circ_labels([x for x in node_list if x.position[1] == r],
+    if labels:
+        creat_labels([x for x in node_list if x.position[1] == r],
                     node_width, ax)
         if any([x.group for x in node_list]):
-            circ_group_labels([x for x in node_list if x.position[1] == r],
+            create_group_labels([x for x in node_list if x.position[1] == r],
                               node_width, ax)
 
     # In the end create layer instance and return it
-    layer = circ_layer('heat_circo', r, (N_sublayers*row_height - r),
+    layer = CircLayer('heat_circo', r, (N_sublayers*row_height - r),
                        node_list, node_width)
 
     return ax, layer

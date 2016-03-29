@@ -28,7 +28,7 @@ import numpy as np
 # %% Add custom patches
 
 def patch_circ(nodes, groupby, data, r, cmap='jet', patch_height=1, ax=None,
-               group_order=None, group_colors=None, create_labels=False,
+               group_order=None, group_colors=None, labels=False,
                headlayer=None):
 
     """
@@ -95,13 +95,13 @@ def patch_circ(nodes, groupby, data, r, cmap='jet', patch_height=1, ax=None,
 
         node.patch = bar
 
-    if create_labels:
-        circ_labels(node_list, node_width, ax)
+    if labels:
+        create_labels(node_list, node_width, ax)
         if any([x.group for x in node_list]):
-            circ_group_labels(node_list, node_width, ax)
+            create_group_labels(node_list, node_width, ax)
 
     # In the end create layer instance
-    layer = circ_layer('hist_circo', r, patch_height, node_list, node_width)
+    layer = CircLayer('hist_circo', r, patch_height, node_list, node_width)
 
     return ax, layer
 
@@ -142,6 +142,6 @@ def dummy_circ(nodes, data, orderby=None, groupby=None,
         node_width = headlayer.node_width
 
     # In the end create layer instance
-    layer = circ_layer('dummy_circ', 0, 0, node_list, node_width)
+    layer = CircLayer('dummy_circ', 0, 0, node_list, node_width)
 
     return ax, layer

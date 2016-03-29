@@ -27,7 +27,7 @@ import numpy as np
 # %% Node class
 
 
-class _circ_node:
+class CircNode:
 
     def __init__(self, position, label, group=None):
         self.position = position
@@ -41,7 +41,7 @@ class _circ_node:
 
 # %% Connection class
 
-class _circ_conn:
+class CircConn:
 
     def __init__(self, start_node, end_node):
         self.start_node = start_node
@@ -57,7 +57,7 @@ class _circ_conn:
 # %% Layer class
 
 
-class _circ_layer:
+class CircLayer:
 
     def __init__(self, l_type, r, span, node_list=None, node_width=0,
                  conn_list=None):
@@ -76,7 +76,7 @@ class _circ_layer:
 
 # TODO - make this a node funciton ?
 
-def circ_labels(node_list, node_width, ax):
+def create_labels(node_list, node_width, ax):
 
     # Remove original ticks
     plt.xticks([])
@@ -98,7 +98,7 @@ def circ_labels(node_list, node_width, ax):
                 horizontalalignment=ha, verticalalignment='center')
 
 
-def circ_group_labels(node_list, node_width, ax):
+def create_group_labels(node_list, node_width, ax):
 
     # Remove original ticks
     plt.xticks([])
@@ -169,7 +169,7 @@ def create_node_list(nodes, data, r, orderby=None, groupby=None,
         if sublayers is None:
 
             # Create node instance
-            node = _circ_node([thetas[node_idx], r], node_label)
+            node = CircNode([thetas[node_idx], r], node_label)
             node.group = group
             node.relative_value = data[(data[nodes] == node_label)]['rel_vals']
 
@@ -180,7 +180,7 @@ def create_node_list(nodes, data, r, orderby=None, groupby=None,
             for sublayer in data[sublayers].unique():
                 row = r_increment * i
                 # Create node instance
-                node = _circ_node([thetas[node_idx], r + row], node_label)
+                node = CircNode([thetas[node_idx], r + row], node_label)
                 node.group = group
                 rel_val = data[(data[nodes] == node_label) &
                                (data[sublayers] == sublayer)]['rel_vals']
@@ -212,7 +212,7 @@ def reuse_nodes(node_list, nodes, data, r, sublayers=None,
         if sublayers is None:
 
             # Create node instance
-            new_node = _circ_node([node.position[0], 0], node.label,
+            new_node = CircNode([node.position[0], 0], node.label,
                                   group=node.group)
             new_node.position[1] = r
             rel_val = data[(data[nodes] == new_node.label)]['rel_vals']
@@ -229,7 +229,7 @@ def reuse_nodes(node_list, nodes, data, r, sublayers=None,
             for sublayer in data[sublayers].unique():
                 row = r_increment * i
                 # Create node instance
-                new_node = _circ_node([node.position[0], 0], node.label,
+                new_node = CircNode([node.position[0], 0], node.label,
                                       group=node.group)
                 new_node.position[1] = r + row
                 rel_val = data[(data[nodes] == new_node.label) &
@@ -324,7 +324,7 @@ def create_conns(data, node_width, nodes, rel_interval):
         nodes_n_con_seen[end] += 1
 
         # Create connection object
-        conn = _circ_conn([x for x in nodes if x.label == row_vals.node_1][0],
+        conn = CircConn([x for x in nodes if x.label == row_vals.node_1][0],
                           [x for x in nodes if x.label == row_vals.node_2][0])
         start_noise = conns_df.loc[i, 'start_noise']
         end_noise = conns_df.loc[i, 'end_noise']

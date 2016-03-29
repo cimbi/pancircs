@@ -29,7 +29,7 @@ import matplotlib.patches as m_patches
 # %% Connection circo
 def conn_circ(nodes_1, nodes_2, conn_val, data, r, rel_interval=[0, 1],
               orderby=None, groupby=None,
-              ax=None, cmap='jet', create_labels=True, headlayer=None,
+              ax=None, cmap='jet', labels=True, headlayer=None,
               codein=['color'], max_linewidth=1):
     """
     Creates circle with relationships between two nodes.
@@ -108,13 +108,13 @@ def conn_circ(nodes_1, nodes_2, conn_val, data, r, rel_interval=[0, 1],
 
     ax.set_rmax(ax.get_ylim()[1])
 
-    if create_labels:
-        circ_labels(node_list, node_width, ax)
+    if labels:
+        create_labels(node_list, node_width, ax)
         if any([x.group for x in node_list]):
-            circ_group_labels([x for x in node_list if x.position[1] == r],
+            create_group_labels([x for x in node_list if x.position[1] == r],
                               node_width, ax)
 
     # In the end create layer instance and return it
-    layer = circ_layer('conn_circo', r, 0, node_list, node_width, conn_list)
+    layer = CircLayer('conn_circo', r, 0, node_list, node_width, conn_list)
 
     return ax, layer
