@@ -106,7 +106,7 @@ def conn_circ(nodes_1, nodes_2, conn_val, data, r, rel_interval=[0, 1],
 
         ax.add_patch(patch)
 
-    ax.set_rmax(ax.get_ylim()[1])
+    ax.set_rmax(r)
 
     if labels:
         create_labels(node_list, node_width, ax)
