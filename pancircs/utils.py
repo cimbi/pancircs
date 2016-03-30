@@ -282,8 +282,7 @@ def create_conns(data, node_width, nodes, rel_interval):
     conns_df = conns_df.sort_values(by=['conn_val'], ascending=True)
 
     # Get number of connections and reate start and end points with jitter
-    # This should be proportional to number of nodes
-    noise_max = node_width * 0.5
+    noise_max = node_width * (len(nodes)*0.001)
     rng = np.random.mtrand.RandomState(seed=0)
     conns_df['node_1_conns'] = 1
     conns_df['node_2_conns'] = 1
