@@ -20,8 +20,8 @@ United States
 from setuptools import setup
 
 setup(name='pancircs',
-      version='0.2.0',
-      install_requires=['pandas','matplotlib'],
+      version='0.2.1',
+      install_requires=['pandas', 'matplotlib'],
       description='Package for circualar visualization of data in pandas',
       url='http://github.com/cimbi/pancircs',
       author='Jan Cimbalnik',

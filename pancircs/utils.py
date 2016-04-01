@@ -78,27 +78,45 @@ class CircLayer:
 
 def create_labels(node_list, node_width, ax):
 
+    # Remove spines and grids
+    ax.spines['polar'].set_visible(False)
+    ax.grid(False)
+
     # Remove original ticks
     plt.xticks([])
     plt.yticks([])
 
-    # Draw node labels
+    # Create new ticks
+    tick_rotations = []
+    tick_angles = []
+    labels = []
     for node in node_list:
-        angle_deg = 180 * (node.position[0] + node_width/2) / np.pi
-        angle_rad = (node.position[0] + node_width/2)
+        tick_angle = 180 * (node.position[0] + node_width/2) / np.pi
+        tick_angles.append(tick_angle)
+        labels.append(node.label)
 
-        if angle_deg >= 270 or angle_deg <= 90:
-            ha = 'left'
+        if tick_angle >= 270 or tick_angle <= 90:
+            tick_rotations.append(tick_angle)
         else:
             # Flip the label, so text is always upright
-            angle_deg += 180
-            ha = 'right'
-        ax.text(angle_rad, ax.get_ylim()[1]+0.4, node.label,
-                rotation=angle_deg, rotation_mode='anchor',
-                horizontalalignment=ha, verticalalignment='center')
+            tick_rotations.append(tick_angle+180)
+
+    max_nlabel_size = max([len(x.label) for x in node_list])
+    ax.set_thetagrids(tick_angles, labels,
+                      frac=1+(max_nlabel_size*0.02))
+    [x.set_rotation(tick_rotations[i]) for i, x
+     in enumerate(ax.get_xticklabels())]
 
 
 def create_group_labels(node_list, node_width, ax):
+
+    # Replicate axis
+    ax = ax.figure.add_axes(ax.get_position(), projection='polar',
+                             frameon=False)
+    
+    # Remove spines and grids
+    ax.spines['polar'].set_visible(False)
+    ax.grid(False)
 
     # Remove original ticks
     plt.xticks([])
@@ -107,26 +125,33 @@ def create_group_labels(node_list, node_width, ax):
     # Get groups
     group_list = list(set([node.group for node in node_list]))
 
+    # Create new ticks
+    tick_rotations = []
+    tick_angles = []
+    labels = []
     for group in group_list:
-        group_thetas = [node.position[0] for node in node_list
-                        if node.group == group]
+        group_thetas = [node.position[0] for node in
+                        node_list if node.group == group]
         group_start = min(group_thetas)
         group_end = max(group_thetas)
         group_width = group_end - group_start
 
-        angle_deg = 180 * (group_start + group_width/2 + node_width/2) / np.pi
-        angle_rad = (group_start + group_width/2 + node_width/2)
+        tick_angle = 180 * (group_start + group_width/2 + node_width/2) / np.pi
+        tick_angles.append(tick_angle)
+        labels.append(group)
 
-        if angle_deg >= 270 or angle_deg <= 90:
-            ha = 'left'
+        if tick_angle >= 270 or tick_angle <= 90:
+            tick_rotations.append(tick_angle)
         else:
             # Flip the label, so text is always upright
-            angle_deg += 180
-            ha = 'right'
-
-        ax.text(angle_rad, ax.get_ylim()[1]+2, group,
-                rotation=angle_deg, rotation_mode='anchor',
-                horizontalalignment=ha, verticalalignment='center')
+            tick_rotations.append(tick_angle+180)
+            
+    max_glabel_size = max([len(x) for x in labels])
+    max_nlabel_size = max([len(x.label) for x in node_list])
+    ax.set_thetagrids(tick_angles, labels,
+                      frac=1+(max_nlabel_size*0.02)+(max_glabel_size*0.02))
+    [x.set_rotation(tick_rotations[i]) for i, x
+     in enumerate(ax.get_xticklabels())]
 
 # %% Node operations
 
@@ -213,7 +238,7 @@ def reuse_nodes(node_list, nodes, data, r, sublayers=None,
 
             # Create node instance
             new_node = CircNode([node.position[0], 0], node.label,
-                                  group=node.group)
+                                group=node.group)
             new_node.position[1] = r
             rel_val = data[(data[nodes] == new_node.label)]['rel_vals']
             # In case the value is not in the dataframe
@@ -230,7 +255,7 @@ def reuse_nodes(node_list, nodes, data, r, sublayers=None,
                 row = r_increment * i
                 # Create node instance
                 new_node = CircNode([node.position[0], 0], node.label,
-                                      group=node.group)
+                                    group=node.group)
                 new_node.position[1] = r + row
                 rel_val = data[(data[nodes] == new_node.label) &
                                (data[sublayers] == sublayer)]['rel_vals']
@@ -324,7 +349,7 @@ def create_conns(data, node_width, nodes, rel_interval):
 
         # Create connection object
         conn = CircConn([x for x in nodes if x.label == row_vals.node_1][0],
-                          [x for x in nodes if x.label == row_vals.node_2][0])
+                        [x for x in nodes if x.label == row_vals.node_2][0])
         start_noise = conns_df.loc[i, 'start_noise']
         end_noise = conns_df.loc[i, 'end_noise']
         conn.start_point = ([conn.start_node.position[0] +
