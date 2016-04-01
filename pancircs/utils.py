@@ -90,6 +90,7 @@ def create_labels(node_list, node_width, ax):
     tick_rotations = []
     tick_angles = []
     labels = []
+    has = []
     for node in node_list:
         tick_angle = 180 * (node.position[0] + node_width/2) / np.pi
         tick_angles.append(tick_angle)
@@ -97,14 +98,18 @@ def create_labels(node_list, node_width, ax):
 
         if tick_angle >= 270 or tick_angle <= 90:
             tick_rotations.append(tick_angle)
+            has.append('left')
         else:
             # Flip the label, so text is always upright
             tick_rotations.append(tick_angle+180)
+            has.append('right')
 
-    max_nlabel_size = max([len(x.label) for x in node_list])
-    ax.set_thetagrids(tick_angles, labels,
-                      frac=1+(max_nlabel_size*0.02))
+    ax.set_thetagrids(tick_angles, labels, frac=1.1)
     [x.set_rotation(tick_rotations[i]) for i, x
+     in enumerate(ax.get_xticklabels())]
+    [x.set_rotation_mode('anchor') for i, x
+     in enumerate(ax.get_xticklabels())]
+    [x.set_ha(has[i]) for i, x
      in enumerate(ax.get_xticklabels())]
 
 
@@ -112,8 +117,8 @@ def create_group_labels(node_list, node_width, ax):
 
     # Replicate axis
     ax = ax.figure.add_axes(ax.get_position(), projection='polar',
-                             frameon=False)
-    
+                            frameon=False)
+
     # Remove spines and grids
     ax.spines['polar'].set_visible(False)
     ax.grid(False)
@@ -129,6 +134,7 @@ def create_group_labels(node_list, node_width, ax):
     tick_rotations = []
     tick_angles = []
     labels = []
+    has = []
     for group in group_list:
         group_thetas = [node.position[0] for node in
                         node_list if node.group == group]
@@ -142,15 +148,19 @@ def create_group_labels(node_list, node_width, ax):
 
         if tick_angle >= 270 or tick_angle <= 90:
             tick_rotations.append(tick_angle)
+            has.append('left')
         else:
             # Flip the label, so text is always upright
             tick_rotations.append(tick_angle+180)
-            
-    max_glabel_size = max([len(x) for x in labels])
+            has.append('right')
+
     max_nlabel_size = max([len(x.label) for x in node_list])
-    ax.set_thetagrids(tick_angles, labels,
-                      frac=1+(max_nlabel_size*0.02)+(max_glabel_size*0.02))
+    ax.set_thetagrids(tick_angles, labels, frac=1.1+(max_nlabel_size*0.05))
     [x.set_rotation(tick_rotations[i]) for i, x
+     in enumerate(ax.get_xticklabels())]
+    [x.set_rotation_mode('anchor') for i, x
+     in enumerate(ax.get_xticklabels())]
+    [x.set_ha(has[i]) for i, x
      in enumerate(ax.get_xticklabels())]
 
 # %% Node operations
