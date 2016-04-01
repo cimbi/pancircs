@@ -6,7 +6,6 @@ Created on Mon Feb 22 00:06:41 2016
 """
 
 
-from .utils import *
 from .patch_circs import *
 from .val_circs import *
 from .conn_circs import *
