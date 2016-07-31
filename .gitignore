@@ -2,7 +2,9 @@
 *.so
 *.pyc
 *.DS_Store
-*.egg_info
 .spyderproject
 *~
-__pycache__
+__pycache__/
+dist/
+build/
+pancircs.egg-info/
