@@ -60,7 +60,6 @@ def conn_circ(nodes_1, nodes_2, conn_val, data, r, rel_interval=[0, 1],
     # Create colormap
     colormap = plt.get_cmap(cmap)
 
-    data.loc[:, 'rel_vals'] = 0
     if headlayer is None:
         node_list, node_width = create_node_list(nodes_1, data, r,
                                                  orderby=orderby,

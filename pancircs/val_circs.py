@@ -66,18 +66,6 @@ def hist_circ(nodes, heat, data, r, max_height, orderby=None, groupby=None,
     if orderby is not None:
         data = data.sort_values(by=orderby)
 
-    # Create variables for relative values
-    if method == 'sum':
-        max_value = data.groupby(nodes)[heat].sum().max()
-        min_value = data.groupby(nodes)[heat].sum().min()
-    elif method == 'mean':
-        max_value = data.groupby(nodes)[heat].mean().max()
-        min_value = data.groupby(nodes)[heat].mean().min()
-    val_range = max_value - min_value
-
-    # Assign relative values
-    data['rel_vals'] = (data[heat] - min_value) / val_range
-
     # Create node list
     if headlayer is None:
         node_list, node_width = create_node_list(nodes, data, r,
@@ -88,6 +76,25 @@ def hist_circ(nodes, heat, data, r, max_height, orderby=None, groupby=None,
         node_list = reuse_nodes(node_list, nodes, data, r, sublayers=None,
                                 r_increment=0.1)
         node_width = headlayer.node_width
+
+    # Assign relative value to each node
+    if method == 'mean':
+        used_method = np.mean
+    elif method == 'sum':
+        used_method = np.sum
+
+    rel_val_df = data.groupby(nodes)[heat].apply(used_method)
+    max_value = rel_val_df.max()
+    min_value = rel_val_df.min()
+    val_range = max_value - min_value
+    rel_val_df = (rel_val_df - min_value) / val_range
+
+    for node in node_list:
+        # In case the value is not in the dataframe
+        if node.label in rel_val_df.keys():
+            node.relative_value = rel_val_df[node.label]
+        else:
+            node.relative_value = 0
 
     if ax is None:
         plt.figure(facecolor='w')
@@ -107,7 +114,6 @@ def hist_circ(nodes, heat, data, r, max_height, orderby=None, groupby=None,
             node.opacity = node.relative_value
 
         # Create node in plot
-
         bar = ax.bar(node.position[0], bar_height, width=node_width, bottom=r,
                      color=node.color, edgecolor="None",
                      alpha=node.opacity)[0]
@@ -169,25 +175,6 @@ def heat_map_circ(nodes, sublayers, heat, data, r, row_height, orderby=None,
     if orderby is not None:
         data = data.sort_values(by=orderby)
 
-    # Variables for relative values
-    max_value = data[heat].max()
-    min_value = data[heat].min()
-    val_range = max_value - min_value
-
-    # Assign relative values
-    data['rel_vals'] = (data[heat] - min_value) / val_range
-
-    # Create node list - all nodes in heatmap - more layers
-#    node_list = []
-#    i=r
-#    for sublayer in data[sublayers].unique():
-#        node_sublist, node_width = create_node_list(nodes, data, i,
-#                                                    orderby = orderby,
-#                                                    groupby = groupby,
-#                                                    sublayers = sublayers)
-#        node_list = node_list + node_sublist
-#        i += row_height
-
     N_sublayers = len(data[sublayers].unique())
     # Create node list
     if headlayer is None:
@@ -201,6 +188,22 @@ def heat_map_circ(nodes, sublayers, heat, data, r, row_height, orderby=None,
         node_list = reuse_nodes(node_list, nodes, data, r,
                                 sublayers=sublayers, r_increment=row_height)
         node_width = headlayer.node_width
+
+    # Assign relative value to each node
+    used_method = np.sum
+
+    rel_val_df = data.groupby([nodes, sublayers])[heat].apply(used_method)
+    max_value = rel_val_df.max()
+    min_value = rel_val_df.min()
+    val_range = max_value - min_value
+    rel_val_df = (rel_val_df - min_value) / val_range
+
+    for node in node_list:
+        if (node.label in rel_val_df.keys().levels[0] and
+                node.sublayer in rel_val_df[node.label].keys()):
+            node.relative_value = rel_val_df[node.label][node.sublayer]
+        else:
+            node.relative_value = 0
 
     # If no axis is passed, create one
     if ax is None:
@@ -228,14 +231,14 @@ def heat_map_circ(nodes, sublayers, heat, data, r, row_height, orderby=None,
 
     # TODO kwargs for text and check if text is already there
     if labels:
-        creat_labels([x for x in node_list if x.position[1] == r],
-                    node_width, ax)
+        create_labels([x for x in node_list if x.position[1] == r],
+                      node_width, ax)
         if any([x.group for x in node_list]):
             create_group_labels([x for x in node_list if x.position[1] == r],
-                              node_width, ax)
+                                node_width, ax)
 
     # In the end create layer instance and return it
     layer = CircLayer('heat_circo', r, (N_sublayers*row_height - r),
-                       node_list, node_width)
+                      node_list, node_width)
 
     return ax, layer

@@ -29,10 +29,11 @@ import numpy as np
 
 class CircNode:
 
-    def __init__(self, position, label, group=None):
+    def __init__(self, position, label):
         self.position = position
         self.label = label
-        self.group = group
+        self.group = None
+        self.sublayer = None
         self.relative_value = 0
         self.color = "b"
         self.opacity = 1
@@ -206,7 +207,6 @@ def create_node_list(nodes, data, r, orderby=None, groupby=None,
             # Create node instance
             node = CircNode([thetas[node_idx], r], node_label)
             node.group = group
-            node.relative_value = data[(data[nodes] == node_label)]['rel_vals']
 
             # Add to node list
             node_list.append(node)
@@ -217,13 +217,7 @@ def create_node_list(nodes, data, r, orderby=None, groupby=None,
                 # Create node instance
                 node = CircNode([thetas[node_idx], r + row], node_label)
                 node.group = group
-                rel_val = data[(data[nodes] == node_label) &
-                               (data[sublayers] == sublayer)]['rel_vals']
-                # In case the value is not in the dataframe
-                if len(rel_val):
-                    node.relative_value = rel_val
-                else:
-                    node.relative_value = 0
+                node.sublayer = sublayer
 
                 i += 1
 
@@ -247,15 +241,9 @@ def reuse_nodes(node_list, nodes, data, r, sublayers=None,
         if sublayers is None:
 
             # Create node instance
-            new_node = CircNode([node.position[0], 0], node.label,
-                                group=node.group)
+            new_node = CircNode([node.position[0], 0], node.label)
+            new_node.group = node.group
             new_node.position[1] = r
-            rel_val = data[(data[nodes] == new_node.label)]['rel_vals']
-            # In case the value is not in the dataframe
-            if len(rel_val):
-                new_node.relative_value = rel_val
-            else:
-                new_node.relative_value = 0
 
             # Add to node list
             new_node_list.append(new_node)
@@ -264,16 +252,11 @@ def reuse_nodes(node_list, nodes, data, r, sublayers=None,
             for sublayer in data[sublayers].unique():
                 row = r_increment * i
                 # Create node instance
-                new_node = CircNode([node.position[0], 0], node.label,
-                                    group=node.group)
+                new_node = CircNode([node.position[0], 0], node.label)
+                new_node.group = node.group
+                new_node.sublayer = sublayer
                 new_node.position[1] = r + row
-                rel_val = data[(data[nodes] == new_node.label) &
-                               (data[sublayers] == sublayer)]['rel_vals']
-                # In case the value is not in the dataframe
-                if len(rel_val):
-                    new_node.relative_value = rel_val
-                else:
-                    new_node.relative_value = 0
+
                 i += 1
                 # Add to node list
                 new_node_list.append(new_node)

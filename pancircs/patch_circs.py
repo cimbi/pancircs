@@ -68,7 +68,6 @@ def patch_circ(nodes, groupby, data, r, cmap='jet', patch_height=1, ax=None,
         group_colors = colormap(group_color_vals)
 
     # Create node list
-    data.loc[:, 'rel_vals'] = 0
     if headlayer is None:
         node_list, node_width = create_node_list(nodes, data, r,
                                                  groupby=groupby)
@@ -131,7 +130,6 @@ def dummy_circ(nodes, data, orderby=None, groupby=None,
     """
 
     # Create node list
-    data['rel_vals'] = 0
     if headlayer is None:
         node_list, node_width = create_node_list(nodes, data, 0,
                                                  orderby=orderby,
