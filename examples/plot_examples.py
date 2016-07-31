@@ -17,7 +17,8 @@ from pancircs import hist_circ, heat_map_circ, conn_circ, patch_circ
 
 
 # Load publicly availabe dataset
-data_url = ('https://github.com/cimbi/pancircs/blob/master/MOCK_DATA.csv')
+data_url = ('https://raw.githubusercontent.com/cimbi/pancircs/'
+            'master/MOCK_DATA.csv')
 data = pd.read_csv(data_url)
 # %% Value circles
 
