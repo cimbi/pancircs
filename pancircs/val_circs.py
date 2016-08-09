@@ -48,7 +48,7 @@ def hist_circ(nodes, heat, data, r, max_height, orderby=None, groupby=None,
     method - method by which the values in heat column are processed the optins
     are 'sum' or 'mean'\n
     cmap - matplotlib cmap for colorcoding\n
-    create_labels - wether to create node and group labels\n
+    create_labels - whether to create node and group labels\n
     headlayer - leading layer where node positions are specified\n
     codein - list of methods for histogram value coding, options are:
     'height','color','opacity'\n
@@ -155,7 +155,7 @@ def heat_map_circ(nodes, sublayers, heat, data, r, row_height, orderby=None,
     groupby - column name with node groups\n
     ax - axes to which the circle is plotted\n
     cmap - matplotlib cmap for colorcoding\n
-    create_labels - wether to create node and group labels\n
+    create_labels - whether to create node and group labels\n
     headlayer - leading layer where node positions are specified\n
     codein - list of methods for histogram value coding, options are:
     'color','opacity'\n
@@ -243,27 +243,26 @@ def heat_map_circ(nodes, sublayers, heat, data, r, row_height, orderby=None,
     
 # %% Line circle
 
-
 def line_circ(nodes, heat, data, r, max_height, orderby=None, groupby=None,
               ax=None, method='sum', labels=True,
               headlayer=None, codein=['height'], **kwargs):
 
     """
-    Creates a histogram circle.
+    Creates a line circle.
 
     Parameters:
     -----------
     nodes - column name with node names\n
-    heat - column name with the values for the histogram\n
+    heat - column name with the values for the linw\n
     data - pandas dataframe\n
     r - radius of the circle\n
-    max_height - maximum height of the histogram columns\n
+    max_height - maximum height of the line\n
     orderby - column name by which the nodes are ordered\n
     groupby - column name with node groups\n
     ax - axes to which the circle is plotted\n
     method - method by which the values in heat column are processed the optins
     are 'sum' or 'mean'\n
-    create_labels - wether to create node and group labels\n
+    create_labels - whether to create node and group labels\n
     headlayer - leading layer where node positions are specified\n
     codein - list of methods for histogram value coding, options are:
     'height'\n
