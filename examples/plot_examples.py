@@ -10,7 +10,7 @@ Testing scripy for circ library
 
 import pandas as pd
 
-from pancircs import hist_circ, heat_map_circ, conn_circ, patch_circ
+from pancircs import hist_circ, heat_map_circ, conn_circ, patch_circ, line_circ
 
 
 # %% Load data
@@ -25,6 +25,10 @@ data = pd.read_csv(data_url)
 # Histogram circle
 hist_circ('person_one', 'messages', data, r=6, max_height=1,
           method='mean', labels=True, codein=['color', 'height'])
+
+# Line circle
+line_circ('person_one', 'messages', data, r=6, max_height=1,
+          method='mean', labels=True, codein=['height'])
 
 # Heat mat circle
 heat_map_circ('person_one', 'month', 'messages', data,

@@ -140,8 +140,6 @@ def heat_map_circ(nodes, sublayers, heat, data, r, row_height, orderby=None,
                   groupby=None, ax=None, cmap='jet', labels=True,
                   headlayer=None, codein=['color']):
 
-    # TODO - add separation and sorting later by structure for example
-
     """
     Creates a heat map circle.
 
@@ -240,5 +238,98 @@ def heat_map_circ(nodes, sublayers, heat, data, r, row_height, orderby=None,
     # In the end create layer instance and return it
     layer = CircLayer('heat_circo', r, (N_sublayers*row_height - r),
                       node_list, node_width)
+
+    return ax, layer
+    
+# %% Line circle
+
+
+def line_circ(nodes, heat, data, r, max_height, orderby=None, groupby=None,
+              ax=None, method='sum', labels=True,
+              headlayer=None, codein=['height'], **kwargs):
+
+    """
+    Creates a histogram circle.
+
+    Parameters:
+    -----------
+    nodes - column name with node names\n
+    heat - column name with the values for the histogram\n
+    data - pandas dataframe\n
+    r - radius of the circle\n
+    max_height - maximum height of the histogram columns\n
+    orderby - column name by which the nodes are ordered\n
+    groupby - column name with node groups\n
+    ax - axes to which the circle is plotted\n
+    method - method by which the values in heat column are processed the optins
+    are 'sum' or 'mean'\n
+    create_labels - wether to create node and group labels\n
+    headlayer - leading layer where node positions are specified\n
+    codein - list of methods for histogram value coding, options are:
+    'height'\n
+    **kwargs - keyword arguments for line plot
+
+    Returns:
+    --------
+    ax - plot axes
+    layer - layer object
+    """
+
+    # Order by
+    if orderby is not None:
+        data = data.sort_values(by=orderby)
+
+    # Create node list
+    if headlayer is None:
+        node_list, node_width = create_node_list(nodes, data, r,
+                                                 orderby=orderby,
+                                                 groupby=groupby)
+    else:
+        node_list = headlayer.node_list
+        node_list = reuse_nodes(node_list, nodes, data, r, sublayers=None,
+                                r_increment=0.1)
+        node_width = headlayer.node_width
+
+    # Assign relative value to each node
+    if method == 'mean':
+        used_method = np.mean
+    elif method == 'sum':
+        used_method = np.sum
+
+    rel_val_df = data.groupby(nodes)[heat].apply(used_method)
+    max_value = rel_val_df.max()
+    min_value = rel_val_df.min()
+    val_range = max_value - min_value
+    rel_val_df = (rel_val_df - min_value) / val_range
+
+    for node in node_list:
+        # In case the value is not in the dataframe
+        if node.label in rel_val_df.keys():
+            node.relative_value = rel_val_df[node.label]
+        else:
+            node.relative_value = 0
+
+    if ax is None:
+        plt.figure(facecolor='w')
+        ax = plt.subplot(111, projection='polar')
+        ax.spines['polar'].set_visible(False)
+
+    # Get x,y positions
+    x = [n.position[0] + node_width/2 for n in node_list]
+    y = [n.position[1]+(max_height*n.relative_value) for n in node_list]
+
+    # Replicate the first value to connect the line
+    x.append(x[0])
+    y.append(y[0])
+    
+    ax.plot(x, y, **kwargs)
+
+    if labels:
+        create_labels(node_list, node_width, ax)
+        if any([x.group for x in node_list]):
+            create_group_labels(node_list, node_width, ax)
+
+    # In the end create layer instance
+    layer = CircLayer('line_circo', r, max_height, node_list, node_width)
 
     return ax, layer
